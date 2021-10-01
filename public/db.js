@@ -23,22 +23,23 @@ request.onerror = function (e) {
 }
 
 function saveRecord(record) {
-    // Create txn on db with readwrite access
+    // Create txn on BudgetStore object with readwrite access
     const transaction = db.transaction(['BudgetStore'], 'readwrite');
-    // Access BudgetStore object store
+    // Access BudgetStore
     const store = transaction.objectStore('BudgetStore');
     // Add record to store with add method
     store.add(record);
 }
 
 function checkDatabase() {
-    // Open txn on BedgetStore db
-    // Access BudgetStore object
+    // Open txn on BudgetStore object
+    let transaction  = db.transaction(['BudgetStore'], 'readwrite');
+    // Access BudgetStore object store
+    const store = transaction.objectStore('BudgetStore');
     // Get all records from store and set to variable
+    const getAll = store.getAll();
 
-    // If successful:
     getAll.onsuccess = function () {
-        // Check for items and bulk add when coming back online
         if (getAll.result.length > 0) {
             fetch('/api/transaction/bulk', {
                 method: 'POST',
@@ -50,9 +51,9 @@ function checkDatabase() {
             })
                 .then((response) => response.json())
                 .then(() => {
-                    // If success, open txn on BudgetStore db with readwrite access
-                    // Access pending object store
-                    // Clear store
+                    // If successful, open txn on BudgetStore object
+                    // Access BudgetStore object
+                    // Clear all items in store
                 });
         }
     };
