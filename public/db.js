@@ -23,9 +23,12 @@ request.onerror = function (e) {
 }
 
 function saveRecord(record) {
-    // Create txn on BudgetStore db with readwrite access
+    // Create txn on db with readwrite access
+    const transaction = db.transaction(['BudgetStore'], 'readwrite');
     // Access BudgetStore object store
+    const store = transaction.objectStore('BudgetStore');
     // Add record to store with add method
+    store.add(record);
 }
 
 function checkDatabase() {
