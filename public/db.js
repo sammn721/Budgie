@@ -49,12 +49,17 @@ function checkDatabase() {
                     'Content-Type': 'application/json',
                 },
             })
-                .then((response) => response.json())
-                .then(() => {
-                    // If successful, open txn on BudgetStore object
+            .then((response) => response.json())
+            .then(() => {
+                // If successful, open txn on BudgetStore object
+                if (res.length !== 0) {
+                    transaction = db.transaction(['BudgetStore'], 'readwrite');
                     // Access BudgetStore object
+                    const currentStore = transaction.objectStore('BudgetStore');
                     // Clear all items in store
-                });
+                    currentStore.clear();
+                }
+            });
         }
     };
 }
