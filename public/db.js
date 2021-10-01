@@ -19,7 +19,7 @@ request.onsuccess = function (e) {
 }
 
 request.onerror = function (e) {
-    console.log(`BORK. ${e.target.errorCode}`)
+    console.log(`ERROR. ${e.target.errorCode}`)
 }
 
 function saveRecord(record) {
