@@ -13,9 +13,9 @@ const FILES_TO_CACHE = [
 ]
 
 // install
-self.addEventListener("install", function (evt) {
+self.addEventListener("install", function (e) {
     // pre cache all static assets
-    evt.waitUntil(
+    e.waitUntil(
         caches.open(CACHE_NAME).then(cache => {
         return cache.addAll(FILES_TO_CACHE);
         })
@@ -25,8 +25,8 @@ self.addEventListener("install", function (evt) {
     self.skipWaiting();
 });
 
-self.addEventListener("activate", function(evt) {
-    evt.waitUntil(
+self.addEventListener("activate", function(e) {
+    e.waitUntil(
         caches.keys().then(keyList => {
             return Promise.all(
                 keyList.map(key => {
@@ -42,28 +42,28 @@ self.addEventListener("activate", function(evt) {
     self.clients.claim();
 });
 
-self.addEventListener('fetch', function(evt) {
-    if (evt.request.url.includes('/api/')) {
-        evt.respondWith(
+self.addEventListener('fetch', function(e) {
+    if (e.request.url.includes('/api/')) {
+        e.respondWith(
             caches.open(DATA_CACHE_NAME).then(cache => {
-                return fetch(evt.request)
+                return fetch(e.request)
                 .then(response => {
                     if (response.status === 200) {
-                        cache.put(evt.request.url, response.clone());
+                        cache.put(e.request.url, response.clone());
                     }
                     return response;
                 })
                 .catch(err => {
                     console.log(err)
-                    return cache.match(evt.request);
+                    return cache.match(e.request);
                 })
             }).catch(err => console.log(err))
         )
         return;
     }
-    evt.respondWith(
-        caches.match(evt.request).then(function(response) {
-            return response || fetch(evt.request);
+    e.respondWith(
+        caches.match(e.request).then(function(response) {
+            return response || fetch(e.request);
         })
     );
 });
