@@ -2,12 +2,10 @@ let db;
 let budgetVersion;
 
 // Opening new database request
-const request = indexedDB.open('BudgetDB', budgetVersion || 1);
+const request = indexedDB.open('BudgetDB', budgetVersion);
 
 
 request.onupgradeneeded = function (e) {
-    const {oldVersion} = e;
-    const newVersion = e.newVersion || db.version;
     db = e.target.result;
     if (db.objectStoreNames.length === 0) {
         db.createObjectStore('BudgetStore', { autoIncrement: true });
@@ -25,15 +23,6 @@ request.onsuccess = function (e) {
 
 request.onerror = function (e) {
     console.log(`ERROR. ${e.target.errorCode}`)
-}
-
-function saveRecord(record) {
-    // Create txn on BudgetStore object with readwrite access
-    const transaction = db.transaction(['BudgetStore'], 'readwrite');
-    // Access BudgetStore
-    const store = transaction.objectStore('BudgetStore');
-    // Add record to store with add method
-    store.add(record);
 }
 
 function checkDatabase() {
@@ -67,6 +56,15 @@ function checkDatabase() {
             });
         }
     };
+}
+
+function saveRecord(record) {
+    // Create txn on BudgetStore object with readwrite access
+    const transaction = db.transaction(['BudgetStore'], 'readwrite');
+    // Access BudgetStore
+    const store = transaction.objectStore('BudgetStore');
+    // Add record to store with add method
+    store.add(record);
 }
 
 // Listen for app coming back online
