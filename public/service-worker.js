@@ -5,8 +5,8 @@ const FILES_TO_CACHE = [
     "/",
     "/index.html",
     "/index.js",
-    "/manifest.webmanifest",
     "/styles.css",
+    "/manifest.webmanifest",
     "icons/icon-192x192.png",
     "icons/icon-512x512.png",
     "/db.js"
@@ -16,12 +16,9 @@ const FILES_TO_CACHE = [
 self.addEventListener("install", function (e) {
     // pre cache all static assets
     e.waitUntil(
-        caches.open(CACHE_NAME).then(cache => {
-        return cache.addAll(FILES_TO_CACHE);
-        })
-    )
-    // tell the browser to activate this service worker immediately once it
-    // has finished installing
+        caches.open(CACHE_NAME).then((cache) => cache.addAll(FILES_TO_CACHE))
+        );
+    // tell the browser to activate this service worker immediately once it has finished installing
     self.skipWaiting();
 });
 
@@ -31,7 +28,6 @@ self.addEventListener("activate", function(e) {
             return Promise.all(
                 keyList.map(key => {
                     if (key !== CACHE_NAME && key !== DATA_CACHE_NAME) {
-                        console.log("Removing old cache data", key);
                         return caches.delete(key);
                     }
                 })
@@ -62,8 +58,10 @@ self.addEventListener('fetch', function(e) {
         return;
     }
     e.respondWith(
-        caches.match(e.request).then(function(response) {
-            return response || fetch(e.request);
+        caches.match(e.request).then(cache => {
+            return cache.match(e.request).then(response => {
+                return response || fetch(e.request);
+            })
         })
-    );
+    )
 });
