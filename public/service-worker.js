@@ -58,10 +58,10 @@ self.addEventListener('fetch', function(e) {
         return;
     }
     e.respondWith(
-        caches.match(e.request).then(cache => {
+        caches.open(CACHE_NAME).then(cache => {
             return cache.match(e.request).then(response => {
                 return response || fetch(e.request);
-            })
+            });
         })
-    )
+    );
 });
